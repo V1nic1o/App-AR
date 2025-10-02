@@ -1,14 +1,15 @@
 // src/screens/LoginScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
-import { login } from '../../api/api'; // Importamos nuestra función de API
+import { AuthContext } from '../../context/AuthContext'; // 1. Importamos el Context
 
 const LoginScreen = ({ navigation }) => {
     const { colors } = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false); // Estado para el indicador de carga
+    const [loading, setLoading] = useState(false);
+    const { signIn } = useContext(AuthContext); // 2. Usamos la función signIn del Context
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -16,22 +17,16 @@ const LoginScreen = ({ navigation }) => {
             return;
         }
         setLoading(true);
-        
-        // --- LÍNEA DE DIAGNÓSTICO AÑADIDA ---
-        console.log('Intentando iniciar sesión con -> username:', email, 'password:', password);
-
         try {
-            const response = await login(email, password);
-            const accessToken = response.data.access_token;
-
-            console.log('Login exitoso! Token:', accessToken);
-            Alert.alert('¡Éxito!', 'Has iniciado sesión correctamente.');
-
+            // 3. Llamamos a la función del context en lugar de a la API directamente
+            await signIn(email, password);
+            // La navegación ahora se maneja automáticamente en RootNavigator,
+            // por lo que no necesitamos hacer nada aquí después del éxito.
         } catch (error) {
-            console.error('Error en el login:', error.response?.data || error.message);
+            console.error('Error de login en la pantalla:', error);
             Alert.alert('Error de autenticación', 'El correo o la contraseña son incorrectos.');
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
