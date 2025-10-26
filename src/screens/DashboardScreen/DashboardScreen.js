@@ -59,10 +59,6 @@ const DashboardScreen = () => {
     );
   };
 
-  /**
-   * 🚀 Manejo centralizado cuando termina una descarga de PDF desde DesignCard
-   * Esto evita el crash al cerrar el modal mientras se abre el visor PDF.
-   */
   const handleDownloadComplete = (success, message) => {
     setDownloadingId(null);
 
